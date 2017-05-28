@@ -1,6 +1,8 @@
 
 import random
 import math
+import cech
+import checks
 
 #reads points from file
 def read_points(filename):
@@ -33,8 +35,18 @@ def generate_points(num_points)	:
         
     return points
         
+
 def main():
-    pass
+    S = generate_points(100)
+    print("Computing VRcx")
+    VRcx, DV = cech.VR(S,0.2)
+
+
+    print("Plotting")
+    DViv = {v:k for k,v in DV.items()}#invert DV
+    EG = [ (DViv[e[0]], DViv[e[1]]) for e in VRcx[1]]
+    cech.plot(S, EG)
+    
 
 if __name__ == "__main__":
     main()

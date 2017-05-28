@@ -1,5 +1,29 @@
 import itertools
 
+#3d cech, VR & stuff
+
+def plot(S, E, save_name = None):
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    
+    #plot edges
+    for e in E:
+        plt.plot([e[0][0],e[1][0]], [e[0][1],e[1][1]], [e[0][2],e[1][2]], 'k-')
+
+    #plot points
+    for p in S:
+        plt.plot([p[0]], [p[1]], [p[2]], 'ro')
+
+    if save_name == None:
+        plt.show()
+    else:
+        plt.savefig(save_name + ".pdf", bbox_inches='tight')
+    plt.close()
+
+
+
 def cliques(VG, EG):
     N = {}
     for v in VG:
@@ -71,6 +95,7 @@ def VR(S, epsilon):
 def explicit(R): 
     R = list(R)
     if len(R) > 3:
+        #return ((0,0,0), 1) # -> four poits determine sphere
         raise Exception("Explicit computation is only implemented for 3 points or less.")
     if len(R) == 3: 
         #barycentric magic:
@@ -148,12 +173,3 @@ def Cech(S, epsilon):
                     #print("Reject: {}, Ball: {}, eps: {}".format(P, B, epsilon**2))
                     pass
     return c
-
-S = [ (3,7,5) , (8,-10,3), (56,1,4) ]
-
-R = explicit(S)
-print(R)
-
-print(dist_sq(R[0], S[0]))
-print(dist_sq(R[0], S[1]))
-print(dist_sq(R[0], S[2]))
