@@ -1,6 +1,9 @@
 
 
-def is_connected(S,E):
+def is_connected(CX):
+    S = CX[0]
+    E = CX[1]
+
     #compute neighbours
     neigh = {}
     for v in S:
