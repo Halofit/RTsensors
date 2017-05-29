@@ -128,6 +128,7 @@ def vr_search(S, r_start, num_iter = 100, save_plot = False):
     best_solution_dictionary = None
     r_max = r_start
     r_min = 0
+
     while best_solution == None:
         print(r_max)
         CX,DV = VR(S, r_max)
@@ -138,10 +139,6 @@ def vr_search(S, r_start, num_iter = 100, save_plot = False):
         else :
             r_min = r_max
             r_max = r_max*1.5
-
-    if save_plot:
-        EG = [ (DV[e[0]], DV[e[1]]) for e in CX[1]]
-        plot(S,EG, save_name = "vr0", file_format="png")
 
     print("Base r: ", r_max)
 

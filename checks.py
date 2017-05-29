@@ -1,8 +1,13 @@
 
 
 def is_connected(CX):
-    S = [v[0] for v in CX[0]]
-    E = CX[1]
+    try:
+        S = [v[0] for v in CX[0]]
+        E = CX[1]
+    except:
+        return False
+
+
 
     #compute neighbours
     neigh = {}
