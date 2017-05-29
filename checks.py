@@ -1,7 +1,7 @@
 
 
 def is_connected(CX):
-    S = CX[0]
+    S = [v[0] for v in CX[0]]
     E = CX[1]
 
     #compute neighbours

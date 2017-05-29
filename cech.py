@@ -1,73 +1,6 @@
 import itertools
-
-#3d cech, VR & stuff
-
-def plot(S, E, save_name = None):
-    import matplotlib.pyplot as plt
-    from mpl_toolkits.mplot3d import Axes3D
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    
-    #plot edges
-    for e in E:
-        plt.plot([e[0][0],e[1][0]], [e[0][1],e[1][1]], [e[0][2],e[1][2]], 'k-')
-
-    #plot points
-    for p in S:
-        plt.plot([p[0]], [p[1]], [p[2]], 'ro')
-
-    if save_name == None:
-        plt.show()
-    else:
-        plt.savefig(save_name + ".pdf", bbox_inches='tight')
-    plt.close()
-
-
-
-def cliques(VG, EG):
-    N = {}
-    for v in VG:
-        N[v] = []
-        for e in EG:
-            if v == e[0]:
-                N[v].append(e[1])
-            elif v == e[1]:
-                N[v].append(e[0])
-    
-    C = []
-    def BK(R, P, X): #Bron–Kerbosch algorithm
-       if len(P) == 0 and len(X) == 0 :
-           C.append(tuple(sorted(R)))
-       for v in set(P):
-           NR = R | set([v])
-           NP = P.intersection(N[v])
-           NX = X.intersection(N[v])
-           BK(NR, NP, NX)
-           P.remove(v)
-           X.add(v)
-    
-    BK(set(), set(VG), set())
-
-    C.sort(key=lambda x: -len(x))
-
-    dim = len(C[0]) - 1 #max dim
-
-    R = {}
-    while dim >= 0:
-        D = set()
-        
-        for c in C:
-            if len(c) == dim+1:
-                D.add(c)
-        
-        if dim+1 in R:
-            for s in R[dim+1]:
-                D.update(itertools.combinations(s , dim+1))
-
-        R[dim] = list(D)
-        dim = dim - 1
-
-    return R
+import rips
+import checks
 
 def dist_sq(a, b):
     dx = b[0] - a[0]
@@ -75,22 +8,6 @@ def dist_sq(a, b):
     dz = b[2] - a[2]
     return dx**2 + dy**2 + dz**2
 
-
-def VR(S, epsilon):
-    #square the max distance so we work with squared values
-    eps = (2*epsilon)**2
-
-    E = []
-    for a in S:
-        for b in S:
-            if a != b and dist_sq(a,b) <= eps:
-                E.append( tuple(sorted([a,b])))
-    
-    DV =  { p: i for i,p in enumerate(S) }
-    VG = [DV[p] for p in S]
-    EG = [ (DV[e[0]], DV[e[1]]) for e in E]
-
-    return cliques(VG, EG), DV
     
 def explicit(R): 
     R = list(R)
@@ -125,8 +42,8 @@ def explicit(R):
         x2 = R[1][0]
         y1 = R[0][1]
         y2 = R[1][1]
-        y1 = R[0][2]
-        y2 = R[1][2]
+        z1 = R[0][2]
+        z2 = R[1][2]
         c = ( (x1+x2) / 2, (y1+y2) / 2, (z1+z2) / 2 )
         return (c , dist_sq(c, R[0]))
     elif len(R) == 1 :
@@ -152,19 +69,16 @@ def mb(P,R): #interior points, boundary
 
 
 def Cech(S, epsilon):
-    vr,dic = VR(S, epsilon)
-    #print(vr)
+    vr,dic = rips.VR(S, epsilon)
     c = {}
-    
-    dicR = {dic[k]:k for k in dic}
-    
+        
     for dim in vr:
         if dim < 2:
             c[dim] = vr[dim]
         else:
             c[dim] = []
             for sx in vr[dim]:
-                P = {dicR[v] for v in sx}
+                P = {dic[v] for v in sx}
 
                 B = mb(P, [])
                 if B[1] <= epsilon**2:
@@ -172,4 +86,53 @@ def Cech(S, epsilon):
                 else:
                     #print("Reject: {}, Ball: {}, eps: {}".format(P, B, epsilon**2))
                     pass
-    return c
+    return c, dic
+
+
+
+def cech_search(S, r_start, num_iter = 100, save_plot = False):
+    minimum_change = 1e-5
+
+    #find first working solution
+    best_solution = None
+    best_solution_dictionary = None
+    r_max = r_start
+    r_min = 0
+    while best_solution == None:
+        print(r_max)
+        CX,DV = Cech(S, r_max)
+
+        if checks.is_sphere(CX):
+            best_solution = CX
+            best_solution_dictionary = DV
+        else :
+            r_min = r_max
+            r_max = r_max*1.5
+
+    if save_plot:
+        EG = [ (DV[e[0]], DV[e[1]]) for e in CX[1]]
+        rips.plot(S,EG, save_name = "cech0", file_format="png")
+
+    for i in range(0, num_iter):
+        r_curr = (r_max + r_min)/2 #pick middle point
+        
+        CX, DV = Cech(S, r_curr)
+
+        if checks.is_sphere(CX):
+            best_solution = CX
+            best_solution_dictionary = DV
+            r_max = r_curr
+
+            if save_plot:
+                EG = [ (DV[e[0]], DV[e[1]]) for e in CX[1]]
+                rips.plot(S,EG, save_name = "cech" + str(i), file_format="png")
+        else :
+            r_min = r_curr
+        
+        print(i, r_curr, checks.is_sphere(CX))
+
+        #exit early if there is very little wiggle room left
+        if (r_max - r_min) < minimum_change:
+            break
+    
+    return r_max, best_solution, best_solution_dictionary

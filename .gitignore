@@ -1,0 +1,8 @@
+
+#
+__pycache__/
+outimg/
+
+*.avi
+*.gif
+*.png

@@ -1,6 +1,7 @@
 
 import random
 import math
+import rips
 import cech
 import checks
 
@@ -35,52 +36,19 @@ def generate_points(num_points)	:
         
     return points
         
-def bi_search(S, r_start, complex_function, check_function, num_iter = 100):
-    minimum_change = 1e-12
+
+def vr_example():
+    S = generate_points(100)
+    rips.vr_search(S, 0.3, save_plot = True)
 
 
-    best_solution = None
-    r_max = r_start
-    r_min = 0
-    while best_solution == None:
-        CX = complex_function(S, r_max)
-
-        if check_function(CX):
-            best_solution = CX
-            prev_r = r_max
-        else :
-            r_max = r_max*1.1
-
-    for i in range(0, num_iter):
-        r_curr = (max_r+min_r)/2 #pick middle point
-        CX = complex_function(S, r_curr)
-
-        if check_function(CX):
-            best_solution = CX
-            r_max = r_curr
-        else :
-            r_min = r_curr
-        
-        #exit early if there is very little wiggle room left
-        if (r_max - r_min) < minimum_change:
-            break
-    
-
-
-
-
+def cech_example():
+    S = generate_points(100)
+    cech.cech_search(S, 0.5, save_plot = True)
 
 def main():
-    S = generate_points(100)
-    print("Computing VRcx")
-    VRcx, DV = cech.VR(S,0.2)
-
-
-    print("Plotting")
-    DViv = {v:k for k,v in DV.items()}#invert DV
-    EG = [ (DViv[e[0]], DViv[e[1]]) for e in VRcx[1]]
-    cech.plot(S, EG)
-    
+    #vr_example()
+    cech_example()
 
 if __name__ == "__main__":
     main()
