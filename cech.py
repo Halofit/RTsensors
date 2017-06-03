@@ -102,7 +102,7 @@ def cech_search(S, r_start, num_iter = 100, save_plot = False):
         print(r_max)
         CX,DV = Cech(S, r_max)
 
-        if checks.is_sphere(CX):
+        if checks.is_sphere(CX, DV):
             best_solution = CX
             best_solution_dictionary = DV
         else :
@@ -118,7 +118,7 @@ def cech_search(S, r_start, num_iter = 100, save_plot = False):
         
         CX, DV = Cech(S, r_curr)
 
-        if checks.is_sphere(CX):
+        if checks.is_sphere(CX, DV):
             best_solution = CX
             best_solution_dictionary = DV
             r_max = r_curr

@@ -1,4 +1,4 @@
-
+from SimplicialComplex import SimplicialComplex
 
 def is_connected(CX):
     try:
@@ -32,13 +32,14 @@ def is_connected(CX):
     #the structure is connected
     return len(marked) == len(set(S))
 
-def is_sphere(CX):
+def is_sphere(CX, DV):
     euler = 0
     for dim in CX:
         euler += len(CX[dim])* ((-1)**dim )
 
         
     #TODO : we need to check the first betty number as well apparently (according to assistant)
-    betty_1 = 0
+    simpComplex = SimplicialComplex(DV.values)
+    betty_1 = simpComplex.betti_number(1)
 
     return betty_1 == 0 and euler == 2
