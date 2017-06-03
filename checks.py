@@ -39,7 +39,8 @@ def is_sphere(CX, DV):
 
         
     #TODO : we need to check the first betty number as well apparently (according to assistant)
-    simpComplex = SimplicialComplex(DV.values)
+    simpComplex = SimplicialComplex(DV.values())
     betty_1 = simpComplex.betti_number(1)
+    print(betty_1)
 
     return betty_1 == 0 and euler == 2
