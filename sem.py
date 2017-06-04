@@ -4,6 +4,7 @@ import math
 import rips
 import cech
 import checks
+import collections
 
 #reads points from file
 def read_points(filename):
@@ -84,9 +85,63 @@ def eq_example():
     S = equidistant_points(50)
     rips.vr_search(S, 0.28, save_plot = True)
 
+def reduce_example():
+    S = read_points("data/sensors02.txt");
+    result = cech.cech_search(S, 0.2, save_plot = True)
+
+    CX = result[1]
+    DV = result[2]
+
+    final_CX, final_DV = remove_redundant(CX, DV)
+
+    EG = [(final_DV[e[0]], final_DV[e[1]]) for e in final_CX[1]]
+    S = final_DV.values()
+    rips.plot(S, EG) #, save_name="cechFinal", file_format="png")
+
+
+def is_inside(center, point, radius):
+    return ((point[0] - center[0])**2 + (point[1] - center[1])**2 + (point[2] - center[2])**2 < radius**2)
+
+def remove_redundant(CX, DV):
+
+    points_to_remove = [];
+
+    for i in range(3, len(CX)):
+
+        CXi = CX[i];
+        for sx in CXi:
+            simplex = {DV[v] for v in sx}
+            boundry = cech.mb(simplex, [])
+            for v2 in sx:
+                if is_inside(boundry[0], DV[v2], math.sqrt(boundry[1])):
+                    if v2 not in points_to_remove:
+                        #print(str(DV[v2])+" index: " + str(v2))
+                        points_to_remove.append(v2)
+
+        for j in range(0,len(points_to_remove)):
+            new_DV = DV.copy();
+            new_DV.pop(points_to_remove[j]);
+            new_CX = collections.defaultdict(list)
+
+            for key, sxlist in CX.iteritems():
+                for sx in sxlist:
+                    if points_to_remove[j] not in sx:
+                        new_CX[key].append(sx)
+
+            if checks.is_connected_old(new_CX) and checks.is_sphere(new_CX, new_DV):
+                print("Redundant sensor: " + str(DV[points_to_remove[j]]) + " at index" + str(points_to_remove[j]))
+                CX = new_CX
+                DV = new_DV
+                points_to_remove.pop(j);
+                break;
+
+    return CX, DV
+
+
 def main():
     #vr_example()
-    eq_example()
+    #eq_example()
+    reduce_example()
 
 if __name__ == "__main__":
     main()
