@@ -19,7 +19,7 @@ def read_points(filename):
     for line in d.split("\n"):
         ls = line.split(",")
         if len(ls) == 3:
-            points.append( tuple(map(float, ls)) )
+            points.append(tuple(map(float, ls)))
     
     return points
 

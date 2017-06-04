@@ -35,7 +35,7 @@ def cliques(VG, EG):
                 N[v].append(e[0])
     
     C = []
-    def BK(R, P, X): #Bron–Kerbosch algorithm
+    def BK(R, P, X):
        if len(P) == 0 and len(X) == 0 :
            C.append(tuple(sorted(R)))
        for v in set(P):
@@ -133,7 +133,7 @@ def vr_search(S, r_start, num_iter = 100, save_plot = False):
         print(r_max)
         CX,DV = VR(S, r_max)
 
-        if checks.is_connected(CX):
+        if checks.is_connected(DV):
             best_solution = CX
             best_solution_dictionary = DV
         else :
@@ -148,7 +148,7 @@ def vr_search(S, r_start, num_iter = 100, save_plot = False):
         #CX, DV = reduceVR(best_solution, best_solution_dictionary, r_curr)
         CX,DV = VR(S, r_curr)
 
-        if checks.is_connected(CX):
+        if checks.is_connected(DV):
             best_solution = CX
             best_solution_dictionary = DV
             r_max = r_curr
@@ -159,7 +159,7 @@ def vr_search(S, r_start, num_iter = 100, save_plot = False):
         else :
             r_min = r_curr
         
-        print(i, r_curr, checks.is_connected(CX))
+        print(i, r_curr, checks.is_connected(DV))
 
 
 

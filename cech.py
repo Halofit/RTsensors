@@ -129,7 +129,7 @@ def cech_search(S, r_start, num_iter = 100, save_plot = False):
         else :
             r_min = r_curr
         
-        print(i, r_curr, checks.is_sphere(CX))
+        print(i, r_curr, checks.is_sphere(CX, DV))
 
         #exit early if there is very little wiggle room left
         if (r_max - r_min) < minimum_change:
