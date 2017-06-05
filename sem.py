@@ -37,7 +37,7 @@ def generate_points(num_points)	:
         
     return points
 
-def equidistant_points(num_points):
+def optimal_points(num_points):
     print("Generating points")
     S = generate_points(num_points)
 
@@ -72,7 +72,7 @@ def equidistant_points(num_points):
     print("Points generated")
     return S
 
-def vr_example():
+def rips_example():
     S = generate_points(100)
     rips.vr_search(S, 0.3, save_plot = True)
 
@@ -81,8 +81,8 @@ def cech_example():
     S = generate_points(100)
     cech.cech_search(S, 0.5, save_plot = True)
 
-def eq_example():
-    S = equidistant_points(50)
+def opti_example():
+    S = optimal_points(50)
     rips.vr_search(S, 0.28, save_plot = True)
 
 def reduce_example():
@@ -142,6 +142,7 @@ def main():
     #vr_example()
     #eq_example()
     reduce_example()
+    opti_example()
 
 if __name__ == "__main__":
     main()
